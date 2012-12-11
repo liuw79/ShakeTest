@@ -14,10 +14,51 @@
 
 @implementation ViewController
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self becomeFirstResponder];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    if ([self isFirstResponder])
+    {
+        if (motion != UIEventSubtypeMotionShake) return;
+        
+        NSLog(@"hey, you shook me!");
+    }
+    else
+    {
+        [super motionEnded:motion withEvent:event];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self bgMove];
+}
+
+- (void) bgMove
+{
+    CGRect newFrame = self.bgImage.frame;
+    newFrame.origin.y = -self.bgImage.frame.size.height;
+    
 	// Do any additional setup after loading the view, typically from a nib.
+    [UIView animateWithDuration:5.0
+                          delay:0.0
+                        options:UIViewAnimationCurveLinear
+                     animations:^{
+                         [self.bgImage setFrame:newFrame];
+                     }
+                     completion:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -26,4 +67,8 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)dealloc {
+    [_bgImage release];
+    [super dealloc];
+}
 @end
